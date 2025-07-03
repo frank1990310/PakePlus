@@ -534,6 +534,7 @@ import {
     remove,
     writeFile,
     rename,
+    mkdir,
 } from '@tauri-apps/plugin-fs'
 import {
     appCacheDir,
@@ -1589,6 +1590,11 @@ const easyLocal = async () => {
     const targetExe = await join(targetDir, targetName, `${targetName}.exe`)
     if (platformName === 'windows') {
         const appDataDirPath = await appDataDir()
+        if (await exists(appDataDirPath)) {
+            console.log('appDataDirPath exists')
+        } else {
+            await mkdir(appDataDirPath, { recursive: true })
+        }
         // ico save to local
         const base64String = store.currentProject.iconRound
             ? roundIcon.value
@@ -1602,7 +1608,6 @@ const easyLocal = async () => {
         const ppexePath: string = await invoke('get_exe_dir', { parent: false })
         // log path
         const logPath: string = await join(appDataDirPath, 'rh.log')
-        console.log('ppexePath', ppexePath)
         const rhtarget = rhscript
             .replace('PakePlus.exe', ppexePath)
             .replace('Target.exe', targetExe)
